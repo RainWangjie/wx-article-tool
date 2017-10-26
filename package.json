@@ -1,22 +1,25 @@
 {
-  "name": "electron-quick-start",
+  "name": "df-article",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
+  "description": "微信文章转换器",
+  "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package": "electron-packager . --platform=darwin --arch=x64 --ignore='(ignore|node_modules)' --version=1.0.0 --overwrite"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "wx",
+    "article"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Mr.Rain",
+  "license": "",
   "devDependencies": {
-    "electron": "~1.7.8"
+    "ali-oss": "^4.4.4",
+    "cheerio": "^1.0.0-rc.2",
+    "electron": "~1.7.8",
+    "electron-packager": "^9.1.0",
+    "jquery": "^3.2.1"
   }
 }
