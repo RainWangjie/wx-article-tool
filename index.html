@@ -3,28 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>微信文章转换器</title>
-    <link href="http://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css" rel="stylesheet"
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css"
+          rel="stylesheet"
           type="text/css">
     <link href="main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="app">
-    <div id="console-wrapper">
-        <ul>
+    <!--操作日志-->
+    <div id="console-wrapper" class="panel panel-info">
+        <div class="panel-heading">操作日志</div>
+        <ul class="list-group">
 
         </ul>
     </div>
-    <div id="article-info">
-        <div class="article-url">
-            <input name="article-url" type="url"
-                   placeholder="输出微信文章链接"/>
+    <!--操作区-->
+    <div id="article-info" class="panel panel-primary">
+        <div class="panel-heading">文章操作区</div>
+        <div>
+            <div class="article-url">
+                <input name="article-url" type="url"
+                       class="form-control"
+                       value="https://mp.weixin.qq.com/s/DMdWKPKCjnHWF8qA2G01XQ"
+                       placeholder="输出微信文章链接"/>
+            </div>
+            <div class="article-operate">
+                <button class="btn btn-default btn-xs btn-open">打开</button>
+                <button class="btn btn-default btn-xs btn-capture-img">抓取图片</button>
+                <button class="btn btn-default btn-xs btn-save">保存到本地</button>
+            </div>
         </div>
-        <div class="article-operate">
-            <button class="btn-open">打开</button>
-            <button class="btn-capture-img">抓取图片</button>
-            <button class="btn-save">保存到本地</button>
-        </div>
+        <div class="panel-footer">图片、文章保存在<br/>文档/df-article-resource</div>
     </div>
+    <!--文章显示区-->
     <div class="iphone">
         <img src="iphone.png" width="100%"/>
         <div id="article-preview">
@@ -36,6 +48,36 @@
             </div>
         </div>
     </div>
+    <!--交互添加弹窗-->
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="modal-add-action">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">添加图片交互</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <select name="action-type" class="form-control input-sm">
+                            <option value="1">链接</option>
+                            <option value="2">精选</option>
+                            <option value="3">订阅</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input name="action-value"
+                               class="form-control"
+                               placeholder="输出微信文章链接"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary btn-save-action">保存</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </div>
 <script id="tpl" type="text/html">
     <!DOCTYPE html>
@@ -51,8 +93,8 @@
 
     <body>
     {1}
+    {2}
     </body>
-
     </html>
 </script>
 <script>

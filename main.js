@@ -1,17 +1,63 @@
-const $ = require('jquery');
+window.$ = window.jQuery = require('jquery');
+require('bootstrap');
+const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
-const fs = require('fs');
+// 获取系统主目录
+const os = require('os');
+const homeDir = `${os.homedir()}/Documents/df-article-resource`;
+const localPathImage = `${homeDir}/images/`;
+const localPathHtml = `${homeDir}/html/`;
+
+// 本地目录创建
+createFile(homeDir).then(() => {
+    createFile(localPathImage)
+}).then(() => {
+    createFile(localPathHtml)
+});
+
+function createFile(path) {
+    return new Promise(function (resolve, reject) {
+        fs.exists(path, (exists) => {
+            if (exists) {
+                resolve();
+                return;
+            }
+            fs.mkdir(path, function (err) {
+                if (err) {
+                    reject();
+                    throw err;
+                }
+                console.log(`make dir${path} success.`);
+                resolve();
+            });
+        })
+    });
+}
+
+// 辅助函数
+let utils = {
+    console(text, className = '') {
+        $console.append(`<li class="list-group-item ${className}">${text}</li>`)
+    },
+    selectDownloadType(src) {
+        return src.substr(0, 5) === 'https' ? https : http
+    }
+};
+
+// DOM处理
 const cheerio = require('cheerio');
 
-const localPath = './images/';
+// oss配置
 const OSS = require('ali-oss').Wrapper;
-
-//oss 配置
-const ossConfig = require('./oss-config.json');
+const ossConfig = require(`${__dirname}/oss-config.json`);
 
 let client = new OSS(ossConfig);
+
+// 添加交互区
+const $model = $('#modal-add-action');
+
 // 存储文章标题
 let articleTitle = '';
 
@@ -21,16 +67,6 @@ const $wx = $('.rich_media_area_primary');
 // 打印窗
 const $console = $('#console-wrapper ul');
 
-// 辅助函数
-let util = {
-    console(text) {
-        $console.append(`<li>${text}</li>`)
-    },
-    selectDownloadType(src) {
-        return src.substr(0, 5) === 'https' ? https : http
-    }
-};
-
 // 打开微信文章
 $('.btn-open').on('click', () => {
     let url = $('[name="article-url" ]').val();
@@ -39,20 +75,22 @@ $('.btn-open').on('click', () => {
         return;
     }
 
-    util.console('开始获取文章');
+    utils.console('开始获取文章');
     getArticle(url).then((html) => {
         //采用cheerio模块解析html
         let $cheerio = cheerio.load(html, {decodeEntities: false});
         articleTitle = $cheerio('title').html();
         $wx.html($cheerio('.rich_media_area_primary').html());
         preLoadImage();
+    }, () => {
+        utils.console('获取文章失败！！！', 'warning')
     })
 });
 
 // 获取文章
 function getArticle(url) {
     return new Promise(function (resolve, reject) {
-        util.selectDownloadType(url)
+        utils.selectDownloadType(url)
             .get(url, function (res) {
                 let html = '';        //用来存储请求网页的整个html内容
                 res.setEncoding('UTF-8'); //防止中文乱码
@@ -62,7 +100,7 @@ function getArticle(url) {
                 });
                 //监听end事件，如果整个网页内容的html都获取完毕，就执行回调函数
                 res.on('end', function () {
-                    util.console('获取文章成功');
+                    utils.console('获取文章成功', 'success');
                     resolve(html);
                 });
 
@@ -82,22 +120,27 @@ function preLoadImage() {
     })
 }
 
-// 替换图片
-$('.btn-capture-img').on('click', captureImg);
+// 抓取并替换图片
+$('.btn-capture-img').on('click', () => {
+    // 创建文章目录，并开始下载文件
+    createFile(`${localPathImage}${articleTitle}`).then(captureImg);
+});
 
 function captureImg() {
     let promiseList = [];
     $wx.find('img').each(function (index, el) {
         promiseList.push(captureImgItem(el, index))
     });
+
+
     Promise.all(promiseList).then(() => {
-        util.console('图片全部下载完成！！！');
+        utils.console('图片全部下载完成！！！', 'success');
     });
 }
 
 function captureImgItem(el, index) {
     return downloadImg(el, index).then(updateImg, (index) => {
-        console.log(`图片${index}无效`);
+        console.log(`图片${index}无效`, 'warning');
     }).then(changeImg).catch((err) => {
         console.log(err)
     });
@@ -109,19 +152,19 @@ function downloadImg(el, index) {
         let src = $(el).attr('data-src'),
             name = `${new Date().getTime()}${Math.random().toString().substr(2, 6)}`,
             type = $(el).attr('data-type'),
-            imgLocalPath = `${localPath}${name}.${type}`;
+            imgLocalPath = `${localPathImage}${articleTitle}/${name}.${type}`;
 
         if (!src) {
             reject(index);
             return;
         }
 
-        util.console(`图片${index}下载..`);
-        util.selectDownloadType(src).get(src, function (res) {
+        utils.console(`图片${index}下载...`);
+        utils.selectDownloadType(src).get(src, function (res) {
             let file = fs.createWriteStream(imgLocalPath);
             res.pipe(file);
             res.on('end', function () {
-                util.console(`图片${index}下载完成`);
+                utils.console(`图片${index}下载完成`, 'success');
                 resolve({
                     el,
                     index,
@@ -135,8 +178,7 @@ function downloadImg(el, index) {
 
 // 上传图片
 function updateImg(obj) {
-    console.log(obj.path);
-    util.console(`上传图片${obj.index}...`);
+    utils.console(`上传图片${obj.index}...`);
     return client.put(`/article/${obj.name}`, obj.path).then(function (val) {
         console.log(val.res.requestUrls[0]);
         obj.cloudPath = val.res.requestUrls[0];
@@ -146,7 +188,7 @@ function updateImg(obj) {
 
 //替换图片
 function changeImg(obj) {
-    util.console(`图片${obj.index}上传成功`);
+    utils.console(`图片${obj.index}上传成功`, 'succses');
     $(obj.el).attr('src', obj.cloudPath).attr('data-src', '');
 }
 
@@ -161,13 +203,62 @@ function saveFile() {
     //内容
     tplHTML = tplHTML.replace('{1}', $('#article-preview').html());
 
-    let file_name = `./html/${articleTitle}.html`;
+    // 脚本
+    tplHTML = tplHTML.replace('{2}', '<script>\n' +
+        '    document.body.onclick = (e) => {\n' +
+        '        if (e.target && e.target.nodeName===\'IMG\') {\n' +
+        '            var el=e.target,\n' +
+        '                value = el.getAttribute(\'data-action-value\'),\n' +
+        '                type = el.getAttribute(\'data-action-value\');\n' +
+        '            if (!value || !type) {\n' +
+        '                return\n' +
+        '            }\n' +
+        '            console.log(type, value)\n' +
+        '        }\n' +
+        '    };\n' +
+        '</script>');
+
+    let file_name = `${localPathHtml}${articleTitle}.html`;
     fs.writeFile(file_name, tplHTML, 'utf8', function (err) {
         if (err) {
             alert(err);
         }
-        util.console(`${articleTitle}文章保存成功！！！`);
+        utils.console(`${articleTitle}文章保存成功！！！`, 'success');
         alert(`${articleTitle}文章保存成功！！！`);
     });
 }
+
+// 为图片添加交互
+let $currentImg,
+    $actionType = $('[name="action-type"]'),
+    $actionValue = $('[name="action-value"]');
+$wx.on('click', 'img', function () {
+    $currentImg = $(this);
+    let actionType = $currentImg.attr('data-action-type') || '1',
+        actionValue = $currentImg.attr('data-action-value') || '',
+        dataSrc = $currentImg.attr('data-src') || '';
+    if (dataSrc) {
+        alert('请选抓取图片');
+        return;
+    }
+    $actionType.val(actionType);
+    $actionValue.val(actionValue);
+
+    $model.modal('show')
+});
+
+// 保存交互
+$('.btn-save-action').on('click', function () {
+    let actionValue = $actionValue.val(),
+        actionType = $actionType.val();
+    if (!actionValue) {
+        alert('输入框为空');
+        return;
+    }
+
+    $currentImg.attr('data-action-type', actionType)
+        .attr('data-action-value', actionValue);
+
+    $model.modal('hide');
+});
 

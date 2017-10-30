@@ -5,6 +5,12 @@
     box-sizing: border-box;
 }
 
+/*iphone内显示不受影响*/
+.rich_media_inner {
+    padding: 0;
+!important;
+}
+
 body, ul {
     margin: 0;
     padding: 0;
@@ -26,23 +32,39 @@ body, ul {
 }
 
 #console-wrapper li {
-    margin: 3px 0;
+    color: #000;
 }
 
+#console-wrapper li.success {
+    color: #0bb20c;
+}
+
+#console-wrapper li.warning {
+    color: red;
+}
 
 /*文章信息*/
 #article-info {
     position: fixed;
     top: 0;
     left: 0;
-    width: 200px;
+    width: 300px;
     padding: 5px;
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.4);
 }
 
-#article-url input{
+#article-info .panel-footer {
+    font-size: 12px;
+}
+
+.article-url input {
     width: 100%;
     padding: 2px;
+}
+
+#article-url,
+.article-operate {
+    margin: 5px 0;
 }
 
 /*文章预览*/

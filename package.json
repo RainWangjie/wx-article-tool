@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager . --platform=darwin --arch=x64 --ignore='(ignore|node_modules)' --version=1.0.0 --overwrite"
+    "package": "electron-packager . --arch=x64 --platform=darwin --version=1.0.0  --ignore='(ignore|node_modules)' --overwrite --electron-version=1.7.9"
   },
   "repository": "",
   "keywords": [
@@ -15,11 +15,14 @@
   ],
   "author": "Mr.Rain",
   "license": "",
-  "devDependencies": {
+  "dependencies": {
     "ali-oss": "^4.4.4",
+    "bootstrap": "^3.3.7",
     "cheerio": "^1.0.0-rc.2",
-    "electron": "~1.7.8",
-    "electron-packager": "^9.1.0",
     "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "electron": "~1.7.8",
+    "electron-packager": "^9.1.0"
   }
 }
