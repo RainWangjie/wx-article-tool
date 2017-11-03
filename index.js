@@ -14,7 +14,7 @@ function createWindow() {
         height: 600,
         icon: __dirname + '/df-icon.png'
     });
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // 配置菜单栏
     if (process.platform === 'darwin') {

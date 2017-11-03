@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>微信文章转换器</title>
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css"
+    <link href="https://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css"
           rel="stylesheet"
           type="text/css">
     <link href="main.css" rel="stylesheet" type="text/css">
@@ -25,13 +25,13 @@
             <div class="article-url">
                 <input name="article-url" type="url"
                        class="form-control"
-                       value="https://mp.weixin.qq.com/s/DMdWKPKCjnHWF8qA2G01XQ"
                        placeholder="输出微信文章链接"/>
             </div>
             <div class="article-operate">
                 <button class="btn btn-default btn-xs btn-open">打开</button>
                 <button class="btn btn-default btn-xs btn-capture-img">抓取图片</button>
                 <button class="btn btn-default btn-xs btn-save">保存到本地</button>
+                <button class="btn btn-default btn-xs btn-reset">重置</button>
             </div>
         </div>
         <div class="panel-footer">图片、文章保存在<br/>文档/df-article-resource</div>
@@ -58,17 +58,15 @@
                     <h4 class="modal-title">添加图片交互</h4>
                 </div>
                 <div class="modal-body">
-                    <div>
-                        <select name="action-type" class="form-control input-sm">
-                            <option value="1">链接</option>
-                            <option value="2">精选</option>
-                            <option value="3">订阅</option>
+                    <div class="input-group input-group-lg">
+                        <select name="action-type" class="form-control  input-group-addon">
+                            <option value="href">链接</option>
+                            <option value="favorite">精选</option>
+                            <option value="subscribe">订阅</option>
                         </select>
-                    </div>
-                    <div>
                         <input name="action-value"
                                class="form-control"
-                               placeholder="输出微信文章链接"/>
+                               placeholder=""/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -87,7 +85,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>{0}</title>
-        <link href="http://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css" rel="stylesheet"
+        <link href="https://deepfashion.oss-cn-hangzhou.aliyuncs.com/article/article-common.css" rel="stylesheet"
               type="text/css">
     </head>
 
@@ -97,6 +95,37 @@
     </body>
     </html>
 </script>
+<!--<script>-->
+    <!--var platform = location.search.split('=')[1];-->
+    <!--document.body.onclick = (e) => {-->
+        <!--if (e.target && e.target.nodeName === 'IMG') {-->
+            <!--var el = e.target,-->
+                <!--value = el.getAttribute('data-action-value'),-->
+                <!--type = el.getAttribute('data-action-type');-->
+            <!--if (!value || !type) {-->
+                <!--return-->
+            <!--}-->
+
+            <!--if(platform==='PC'){-->
+                <!--var data = {-->
+                    <!--'type': type,-->
+                    <!--'value': value-->
+                <!--};-->
+                <!--window.parent.postMessage(data, '*');-->
+            <!--}-->
+
+            <!--if(platform==='APP'){-->
+                <!--if(type==='follow'){-->
+                    <!--location.href='dfapp:action?type=subscribe&bloggerId='+value-->
+                <!--}-->
+                <!--if(type==='favorite'){-->
+                    <!--location.href='dfapp:action?type=favorite&blogId='+value-->
+                <!--}-->
+            <!--}-->
+            <!--console.log('iframe', data)-->
+        <!--}-->
+    <!--};-->
+<!--</script>-->
 <script>
     // You can also require other files to run in this process
     require('./main.js')

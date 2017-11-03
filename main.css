@@ -19,8 +19,8 @@ body, ul {
 /*控制窗*/
 #console-wrapper {
     position: fixed;
-    top: 0;
-    right: 0;
+    top: 5px;
+    right: 5px;
     width: 200px;
     padding: 5px;
     min-height: 200px;
@@ -46,8 +46,8 @@ body, ul {
 /*文章信息*/
 #article-info {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 5px;
+    left: 5px;
     width: 300px;
     padding: 5px;
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.4);

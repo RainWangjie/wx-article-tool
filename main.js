@@ -67,9 +67,14 @@ const $wx = $('.rich_media_area_primary');
 // 打印窗
 const $console = $('#console-wrapper ul');
 
-// 打开微信文章
+/**
+ *  打开微信文章
+ *  ========================================================
+ */
+let $url = $('[name="article-url" ]');
 $('.btn-open').on('click', () => {
-    let url = $('[name="article-url" ]').val();
+    reset();
+    let url = $url.val();
     if (!url) {
         alert('输入url');
         return;
@@ -82,6 +87,7 @@ $('.btn-open').on('click', () => {
         articleTitle = $cheerio('title').html();
         $wx.html($cheerio('.rich_media_area_primary').html());
         preLoadImage();
+        delWxApp();
     }, () => {
         utils.console('获取文章失败！！！', 'warning')
     })
@@ -117,10 +123,18 @@ function getArticle(url) {
 function preLoadImage() {
     $wx.find('img').each(function () {
         $(this).attr('src', $(this).attr('data-src'))
-    })
+    });
 }
 
-// 抓取并替换图片
+// 解除小程序操作
+function delWxApp() {
+    $('.weapp_image_link img').unwrap();
+}
+
+/**
+ * 抓取并替换图片
+ * ========================================================
+ */
 $('.btn-capture-img').on('click', () => {
     // 创建文章目录，并开始下载文件
     createFile(`${localPathImage}${articleTitle}`).then(captureImg);
@@ -128,20 +142,45 @@ $('.btn-capture-img').on('click', () => {
 
 function captureImg() {
     let promiseList = [];
+    let i = 1;
     $wx.find('img').each(function (index, el) {
-        promiseList.push(captureImgItem(el, index))
+        let src = $(el).attr('src');
+
+        if (new RegExp('http').test(src)) {
+            promiseList.push(captureImgItem(el, i));
+            i++
+        }
+    });
+    $wx.find('section').each(function (index, el) {
+        let is_bg = $(el).css('background-image').replace(/url\((.+)\)/, '$1').replace(/"/g, '');
+        if (is_bg !== 'none') {
+            promiseList.push(captureBgItem(el, i));
+            i++;
+        }
     });
 
-
     Promise.all(promiseList).then(() => {
-        utils.console('图片全部下载完成！！！', 'success');
+        alert('图片全部抓取完成');
+        utils.console('图片全部抓取完成！！！', 'success');
+    }).catch(() => {
+        utils.console('异常，请重试', 'warning')
     });
 }
 
+// 抓取img标签图片
 function captureImgItem(el, index) {
     return downloadImg(el, index).then(updateImg, (index) => {
-        console.log(`图片${index}无效`, 'warning');
+        console.log(`Img图片${index}无效`, 'warning');
     }).then(changeImg).catch((err) => {
+        console.log(err)
+    });
+}
+
+// 抓取dom背景图片
+function captureBgItem(el, index) {
+    return downloadImg(el, index).then(updateImg, (index) => {
+        console.log(`Bg图片${index}无效`, 'warning');
+    }).then(changeBg).catch((err) => {
         console.log(err)
     });
 }
@@ -188,11 +227,22 @@ function updateImg(obj) {
 
 //替换图片
 function changeImg(obj) {
-    utils.console(`图片${obj.index}上传成功`, 'succses');
+    utils.console(`Img图片${obj.index}上传成功`, 'success');
     $(obj.el).attr('src', obj.cloudPath).attr('data-src', '');
 }
 
-// 文章保存到本地
+//替换背景
+function changeBg(obj) {
+    utils.console(`Bg图片${obj.index}上传成功`, 'success');
+    $(obj.e).css('background-image', `url(${obj.cloudPath})`);
+
+}
+
+
+/*
+ * 文章保存到本地
+ * ========================================================
+ */
 $('.btn-save').on('click', saveFile);
 
 function saveFile() {
@@ -205,15 +255,33 @@ function saveFile() {
 
     // 脚本
     tplHTML = tplHTML.replace('{2}', '<script>\n' +
+        '    var platform = location.search.split(\'=\')[1];\n' +
         '    document.body.onclick = (e) => {\n' +
-        '        if (e.target && e.target.nodeName===\'IMG\') {\n' +
-        '            var el=e.target,\n' +
+        '        if (e.target && e.target.nodeName === \'IMG\') {\n' +
+        '            var el = e.target,\n' +
         '                value = el.getAttribute(\'data-action-value\'),\n' +
-        '                type = el.getAttribute(\'data-action-value\');\n' +
+        '                type = el.getAttribute(\'data-action-type\');\n' +
         '            if (!value || !type) {\n' +
         '                return\n' +
         '            }\n' +
-        '            console.log(type, value)\n' +
+        '\n' +
+        '            if(platform===\'PC\'){\n' +
+        '                var data = {\n' +
+        '                    \'type\': type,\n' +
+        '                    \'value\': value\n' +
+        '                };\n' +
+        '                window.parent.postMessage(data, \'*\');\n' +
+        '            }\n' +
+        '\n' +
+        '            if(platform===\'APP\'){\n' +
+        '                if(type===\'follow\'){\n' +
+        '                    location.href=\'dfapp:action?type=subscribe&bloggerId=\'+value\n' +
+        '                }\n' +
+        '                if(type===\'favorite\'){\n' +
+        '                    location.href=\'dfapp:action?type=favorite&blogId=\'+value\n' +
+        '                }\n' +
+        '            }\n' +
+        '            console.log(\'iframe\', data)\n' +
         '        }\n' +
         '    };\n' +
         '</script>');
@@ -228,13 +296,16 @@ function saveFile() {
     });
 }
 
-// 为图片添加交互
+/**
+ * 为图片添加交互
+ * ========================================================
+ */
 let $currentImg,
     $actionType = $('[name="action-type"]'),
     $actionValue = $('[name="action-value"]');
 $wx.on('click', 'img', function () {
     $currentImg = $(this);
-    let actionType = $currentImg.attr('data-action-type') || '1',
+    let actionType = $currentImg.attr('data-action-type') || 'href',
         actionValue = $currentImg.attr('data-action-value') || '',
         dataSrc = $currentImg.attr('data-src') || '';
     if (dataSrc) {
@@ -261,4 +332,17 @@ $('.btn-save-action').on('click', function () {
 
     $model.modal('hide');
 });
+
+/**
+ * 重置
+ */
+$('.btn-reset').on('click', function () {
+    $url.val();
+    reset();
+});
+
+function reset() {
+    $wx.html('');
+    $console.html('');
+}
 
