@@ -2,3 +2,4 @@ node_modules
 oss-config.json
 .idea/
 df-article-darwin-x64
+*.zip
