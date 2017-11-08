@@ -50,7 +50,7 @@
     </div>
     <!--交互添加弹窗-->
     <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="modal-add-action">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -58,15 +58,20 @@
                     <h4 class="modal-title">添加图片交互</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="input-group input-group-lg">
-                        <select name="action-type" class="form-control  input-group-addon">
-                            <option value="href">链接</option>
-                            <option value="favorite">精选</option>
-                            <option value="subscribe">订阅</option>
-                        </select>
-                        <input name="action-value"
-                               class="form-control"
-                               placeholder=""/>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <select name="action-type" class="form-control  input-group-addon">
+                                <option value="href">链接</option>
+                                <option value="favorite">精选</option>
+                                <option value="subscribe-ins">订阅博主</option>
+                                <option value="subscribe-show">订阅秀场</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input name="action-value"
+                                   class="form-control"
+                                   placeholder=""/>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -96,35 +101,35 @@
     </html>
 </script>
 <!--<script>-->
-    <!--var platform = location.search.split('=')[1];-->
-    <!--document.body.onclick = (e) => {-->
-        <!--if (e.target && e.target.nodeName === 'IMG') {-->
-            <!--var el = e.target,-->
-                <!--value = el.getAttribute('data-action-value'),-->
-                <!--type = el.getAttribute('data-action-type');-->
-            <!--if (!value || !type) {-->
-                <!--return-->
-            <!--}-->
+<!--var platform = location.search.split('=')[1];-->
+<!--document.body.onclick = (e) => {-->
+<!--if (e.target && e.target.nodeName === 'IMG') {-->
+<!--var el = e.target,-->
+<!--value = el.getAttribute('data-action-value'),-->
+<!--type = el.getAttribute('data-action-type');-->
+<!--if (!value || !type) {-->
+<!--return-->
+<!--}-->
 
-            <!--if(platform==='PC'){-->
-                <!--var data = {-->
-                    <!--'type': type,-->
-                    <!--'value': value-->
-                <!--};-->
-                <!--window.parent.postMessage(data, '*');-->
-            <!--}-->
+<!--if (platform === 'PC') {-->
+<!--var data = {-->
+<!--'type': type,-->
+<!--'value': value-->
+<!--};-->
+<!--window.parent.postMessage(data, '*');-->
+<!--}-->
 
-            <!--if(platform==='APP'){-->
-                <!--if(type==='follow'){-->
-                    <!--location.href='dfapp:action?type=subscribe&bloggerId='+value-->
-                <!--}-->
-                <!--if(type==='favorite'){-->
-                    <!--location.href='dfapp:action?type=favorite&blogId='+value-->
-                <!--}-->
-            <!--}-->
-            <!--console.log('iframe', data)-->
-        <!--}-->
-    <!--};-->
+<!--if (platform === 'APP') {-->
+<!--if (new RegExp('subscribe').test(type)) {-->
+<!--location.href = 'dfapp:action?type=subscribe&bloggerId=' + value-->
+<!--}-->
+<!--if (type === 'favorite') {-->
+<!--location.href = 'dfapp:action?type=favorite&blogId=' + value-->
+<!--}-->
+<!--}-->
+<!--console.log('iframe', data)-->
+<!--}-->
+<!--};-->
 <!--</script>-->
 <script>
     // You can also require other files to run in this process

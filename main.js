@@ -220,7 +220,7 @@ function updateImg(obj) {
     utils.console(`上传图片${obj.index}...`);
     return client.put(`/article/${obj.name}`, obj.path).then(function (val) {
         console.log(val.res.requestUrls[0]);
-        obj.cloudPath = val.res.requestUrls[0];
+        obj.cloudPath = val.res.requestUrls[0].replace('http', 'https');
         return obj;
     });
 }
@@ -255,35 +255,35 @@ function saveFile() {
 
     // 脚本
     tplHTML = tplHTML.replace('{2}', '<script>\n' +
-        '    var platform = location.search.split(\'=\')[1];\n' +
-        '    document.body.onclick = (e) => {\n' +
-        '        if (e.target && e.target.nodeName === \'IMG\') {\n' +
-        '            var el = e.target,\n' +
-        '                value = el.getAttribute(\'data-action-value\'),\n' +
-        '                type = el.getAttribute(\'data-action-type\');\n' +
-        '            if (!value || !type) {\n' +
-        '                return\n' +
-        '            }\n' +
-        '\n' +
-        '            if(platform===\'PC\'){\n' +
-        '                var data = {\n' +
-        '                    \'type\': type,\n' +
-        '                    \'value\': value\n' +
-        '                };\n' +
-        '                window.parent.postMessage(data, \'*\');\n' +
-        '            }\n' +
-        '\n' +
-        '            if(platform===\'APP\'){\n' +
-        '                if(type===\'follow\'){\n' +
-        '                    location.href=\'dfapp:action?type=subscribe&bloggerId=\'+value\n' +
+        '        var platform = location.search.split(\'=\')[1];\n' +
+        '        document.body.onclick = (e) => {\n' +
+        '            if (e.target && e.target.nodeName === \'IMG\') {\n' +
+        '                var el = e.target,\n' +
+        '                    value = el.getAttribute(\'data-action-value\'),\n' +
+        '                    type = el.getAttribute(\'data-action-type\');\n' +
+        '                if (!value || !type) {\n' +
+        '                    return\n' +
         '                }\n' +
-        '                if(type===\'favorite\'){\n' +
-        '                    location.href=\'dfapp:action?type=favorite&blogId=\'+value\n' +
+        '\n' +
+        '                if (platform === \'PC\') {\n' +
+        '                    var data = {\n' +
+        '                        \'type\': type,\n' +
+        '                        \'value\': value\n' +
+        '                    };\n' +
+        '                    window.parent.postMessage(data, \'*\');\n' +
         '                }\n' +
+        '\n' +
+        '                if (platform === \'APP\') {\n' +
+        '                    if (new RegExp(\'subscribe\').test(type)) {\n' +
+        '                        location.href = \'dfapp:action?type=subscribe&bloggerId=\' + value\n' +
+        '                    }\n' +
+        '                    if (type === \'favorite\') {\n' +
+        '                        location.href = \'dfapp:action?type=favorite&blogId=\' + value\n' +
+        '                    }\n' +
+        '                }\n' +
+        '                console.log(\'iframe\', data)\n' +
         '            }\n' +
-        '            console.log(\'iframe\', data)\n' +
-        '        }\n' +
-        '    };\n' +
+        '        };\n' +
         '</script>');
 
     let file_name = `${localPathHtml}${articleTitle}.html`;

@@ -1,11 +1,11 @@
 {
   "name": "df-article",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "微信文章转换器",
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager . --arch=x64 --platform=darwin --version=1.0.0  --ignore='(ignore|node_modules)' --overwrite --electron-version=1.7.9"
+    "package": "electron-packager . --arch=x64 --platform=darwin --version=1.0.1 --icon=df-icon  --ignore='(ignore|node_modules)' --overwrite --electron-version=1.7.9"
   },
   "repository": "",
   "keywords": [

@@ -12,7 +12,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        icon: __dirname + '/df-icon.png'
+        icon: __dirname + '/df-icon.icns'
     });
     mainWindow.webContents.openDevTools();
 
