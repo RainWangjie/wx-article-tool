@@ -122,7 +122,17 @@ function getArticle(url) {
 // 预加载微信图片
 function preLoadImage() {
     $wx.find('img').each(function () {
-        $(this).attr('src', $(this).attr('data-src'))
+        let $el = $(this),
+            src = $el.attr('data-src');
+        if (src) {
+            $el.attr('src', src);
+        }
+        // 临时方法
+
+        let type=$el.attr('data-action-type');
+        if (type) {
+            $el.parent().attr('data-action-type', type);
+        }
     });
 }
 
@@ -305,9 +315,10 @@ let $currentImg,
     $actionValue = $('[name="action-value"]');
 $wx.on('click', 'img', function () {
     $currentImg = $(this);
-    let actionType = $currentImg.attr('data-action-type') || 'href',
+    let actionType = $currentImg.attr('data-action-type') || 'favorite',
         actionValue = $currentImg.attr('data-action-value') || '',
         dataSrc = $currentImg.attr('data-src') || '';
+
     if (dataSrc) {
         alert('请选抓取图片');
         return;
@@ -329,6 +340,8 @@ $('.btn-save-action').on('click', function () {
 
     $currentImg.attr('data-action-type', actionType)
         .attr('data-action-value', actionValue);
+
+    $currentImg.parent().attr('data-action-type', actionType);
 
     $model.modal('hide');
 });

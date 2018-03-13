@@ -88,3 +88,39 @@ body, ul {
 #article-preview::-webkit-scrollbar {
     display: none
 }
+
+[data-action-type] {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-action-type]:after {
+    content: '';
+    position: absolute;
+    right: -16px;
+    top: 8px;
+    width: 70px;
+    font-size: 12px;
+    text-align: center;
+    transform: rotate(45deg);
+}
+
+[data-action-type=href]:after {
+    content: '链接';
+    background: #f50;
+}
+
+[data-action-type=favorite]:after {
+    content: '精选';
+    background: #2db7f5;
+}
+
+[data-action-type=subscribe-ins]:after {
+    content: '订阅ins';
+    background: #87d068;
+}
+
+[data-action-type=subscribe-show]:after {
+    content: '订阅秀场';
+    background: #108ee9;
+}
