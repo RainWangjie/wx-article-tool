@@ -21,3 +21,4 @@
 ```
 * 解除文章内绑定的小程序链接
 * 文章内img元素添加data属性（iframe加载，可在父页面捕获事件）
+* 文章Html输出到`/Documents/df-article-resource`
